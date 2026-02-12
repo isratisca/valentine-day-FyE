@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>San Valentin FyE 💖</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Pacifico&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --accent:#ff4d88;
+  --bg1:#070712;
+  --bg2:#1b0f2e;
+  --bg3:#2a1036;
+}
+
+body{
+  margin:0;
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:linear-gradient(160deg,var(--bg1),var(--bg2),var(--bg3));
+  color:white;
+  font-family:Fredoka, system-ui, Arial;
+  overflow:hidden;
+}
+
+/* ===== Luces tipo escenario + cambio de color ===== */
+.stageLights{
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  overflow:hidden;
+  z-index:1;
+  animation: hueShift 8s linear infinite;
+  opacity:.95;
+}
+@keyframes hueShift{
+  0%{ filter:hue-rotate(0deg) saturate(1.1); }
+  100%{ filter:hue-rotate(360deg) saturate(1.1); }
+}
+.beam{
+  position:absolute;
+  width:140px;
+  height:120vh;
+  top:-20vh;
+  opacity:.16;
+  filter:blur(28px);
+  transform-origin:top center;
+  animation:moveBeam 8s ease-in-out infinite alternate;
+}
+.beam.pink{ background:linear-gradient(to bottom, #ff4d88, transparent); left:16%; }
+.beam.purple{ background:linear-gradient(to bottom, #7d4cff, transparent); left:52%; animation-delay:2s; }
+.beam.blue{ background:linear-gradient(to bottom, #4cc9f0, transparent); left:78%; animation-delay:4s; }
+
+@keyframes moveBeam{
+  0%{ transform:rotate(-28deg) translateX(-20px); }
+  100%{ transform:rotate(28deg) translateX(20px); }
+}
+.stageLights.party .beam{
+  opacity:.22;
+  animation-duration: 3.2s;
+}
+
+/* ===== Flash tipo público ===== */
+.flashOverlay{
+  position:fixed;
+  inset:0;
+  background: rgba(255,255,255,0);
+  pointer-events:none;
+  z-index:3;
+  transition: background 120ms ease;
+}
+.flashOverlay.flash{
+  background: rgba(255,255,255,.16);
+}
+
+/* estrellas */
+.star{
+  position:absolute;
+  background:white;
+  border-radius:50%;
+  animation:twinkle 3s infinite;
+  z-index:0;
+}
+@keyframes twinkle{
+  50%{opacity:0.2; transform:scale(1.5);}
+}
+
+/* corazones flotando */
+.heart{
+  position:absolute;
+  font-size:20px;
+  animation:float 10s linear infinite;
+  pointer-events:none;
+  z-index:0;
+}
+@keyframes float{
+  from{transform:translateY(110vh);}
+  to{transform:translateY(-20vh);}
+}
+
+.card{
+  background:rgba(255,255,255,0.05);
+  padding:25px;
+  border-radius:20px;
+  backdrop-filter:blur(10px);
+  text-align:center;
+  width:320px;
+  position:relative;
+  z-index:5;
+  transition: transform 180ms ease;
+}
+.card.beat{
+  transform: translateY(-2px) scale(1.01);
+}
+
+.title{
+  font-family:Pacifico;
+  font-size:36px;
+  margin-bottom:10px;
+}
+
+.question{
+  font-size:17px;
+  line-height:1.35;
+}
+
+/* Prometo... con glow + fade-in + corazon late */
+.subQuestion{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  margin-top:7px;
+  font-size:15px;
+  opacity:0;
+  transform: translateY(6px);
+  animation: subFadeIn 900ms ease forwards;
+  animation-delay: 200ms;
+
+  text-shadow:
+    0 0 10px rgba(255,77,136,.45),
+    0 0 18px rgba(155,92,255,.35);
+}
+@keyframes subFadeIn{
+  to{ opacity:.92; transform: translateY(0); }
+}
+
+/* corazoncito que late */
+.pulseHeart{
+  display:inline-block;
+  filter: drop-shadow(0 0 10px rgba(255,77,136,.5));
+  animation: heartbeat 1.15s ease-in-out infinite;
+  transform-origin:center;
+}
+@keyframes heartbeat{
+  0%, 100%{ transform: scale(1); }
+  10%{ transform: scale(1.18); }
+  25%{ transform: scale(1.05); }
+  40%{ transform: scale(1.20); }
+  55%{ transform: scale(1.02); }
+}
+.pulseHeart.fast{ animation-duration: .55s; }
+
+.afterYes{
+  display:none;
+  margin-top:10px;
+}
+
+/* área botones */
+.btnArea{
+  position:relative;
+  height:72px;
+  margin-top:10px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:12px;
+}
+button{
+  padding:12px 20px;
+  border:none;
+  border-radius:20px;
+  font-size:18px;
+  cursor:pointer;
+}
+#btnYes{
+  background:#ff4d88;
+  color:white;
+  position:relative;
+  z-index:2;
+}
+#btnNo{
+  background:white;
+  color:#3b0b1d;
+  position:absolute;
+  z-index:1;
+}
+
+/* Letrero Ya dijiste */
+.yesLabel{
+  display:none;
+  background:linear-gradient(135deg, #ff4d88, #9b5cff);
+  padding:12px 22px;
+  border-radius:20px;
+  font-size:18px;
+  box-shadow:
+    0 0 25px rgba(255,77,136,0.7),
+    0 0 45px rgba(155,92,255,0.5);
+  animation:popIn .5s ease;
+  width:fit-content;
+  margin:10px auto 0 auto;
+}
+@keyframes popIn{
+  from{ transform:scale(.65); opacity:0; }
+  to{ transform:scale(1); opacity:1; }
+}
+
+/* countdown */
+#countdown{
+  display:none;
+  margin-top:8px;
+  font-size:14px;
+  opacity:.95;
+}
+
+/* banner */
+.love-banner{
+  display:none;
+  margin-top:8px;
+  padding:10px 18px;
+  border-radius:50px;
+  background:linear-gradient(135deg,#ff4d88,#7d4cff);
+  box-shadow:0 0 20px rgba(255,77,136,.75);
+  width:fit-content;
+  max-width:100%;
+  margin-left:auto;
+  margin-right:auto;
+}
+.neon{
+  font-family:Pacifico;
+  font-size:32px;
+  text-shadow:0 0 15px rgba(255,77,136,.85);
+}
+
+/* cursor typewriter (solo mientras escribe) */
+.type{
+  border-right:2px solid rgba(255,255,255,.9);
+  padding-right:4px;
+  animation: caret 800ms steps(1) infinite;
+}
+@keyframes caret{ 50%{ border-color: transparent; } }
+
+/* ===== Imagen: aparece poco a poco (5+ segundos) ===== */
+.letterWrap{
+  display:none;
+  margin-top:10px;
+}
+
+.ticket{
+  width:100%;
+  border-radius:15px;
+  box-shadow:0 12px 25px rgba(0,0,0,.35);
+
+  /* inicia invisible */
+  opacity:0;
+  transform: translateY(10px) scale(0.99);
+
+  /* 👇 tarda 5.5s en aparecer completo */
+  transition: opacity 5.5s ease, transform 1.2s ease;
+}
+
+/* cuando se activa */
+.ticket.show{
+  opacity:1;
+  transform: translateY(0) scale(1);
+}
+</style>
+</head>
+
+<body>
+
+<div class="stageLights" id="stageLights">
+  <div class="beam pink"></div>
+  <div class="beam purple"></div>
+  <div class="beam blue"></div>
+</div>
+
+<div class="flashOverlay" id="flashOverlay"></div>
+<div id="stars"></div>
+
+<div class="card" id="card">
+
+  <div class="title">Valentine's 2026</div>
+
+  <div class="question">
+    ¿Puedo ser tu Valentine’s Day? 💖
+    <div class="subQuestion">
+      Prometo una noche inolvidable
+      <span class="pulseHeart">✨</span>
+    </div>
+  </div>
+
+  <div class="afterYes" id="afterYes">
+    <div class="yesLabel" id="yesLabel">Ya dijiste ☝🏻</div>
+    <div id="countdown"></div>
+  </div>
+
+  <div class="btnArea" id="btnArea">
+    <button id="btnYes">Siii 💘</button>
+    <button id="btnNo">Nooo 🙈</button>
+  </div>
+
+  <div class="love-banner" id="loveBanner">
+    <span class="neon" id="typeText"></span> &lt;333
+  </div>
+
+  <div class="letterWrap" id="letterWrap">
+    <img id="ticketImg" src="boletos.jpg" class="ticket" alt="Boletos">
+  </div>
+
+  <audio id="audioYes" preload="auto">
+    <source src="sonido.mp3" type="audio/mpeg">
+  </audio>
+
+</div>
+
+<script>
+/* estrellas */
+for(let i=0;i<60;i++){
+  let s=document.createElement("div");
+  s.className="star";
+  s.style.width=s.style.height=(Math.random()*3+1)+"px";
+  s.style.left=Math.random()*100+"vw";
+  s.style.top=Math.random()*100+"vh";
+  s.style.animationDuration=(Math.random()*3+2)+"s";
+  document.body.appendChild(s);
+}
+
+/* corazones */
+let hearts=["💖","💘","💞","💕"];
+setInterval(()=>{
+  let h=document.createElement("div");
+  h.className="heart";
+  h.innerHTML=hearts[Math.floor(Math.random()*hearts.length)];
+  h.style.left=Math.random()*100+"vw";
+  h.style.animationDuration=(Math.random()*5+6)+"s";
+  document.body.appendChild(h);
+  setTimeout(()=>h.remove(),11000);
+},600);
+
+/* Flash público */
+const flashOverlay = document.getElementById("flashOverlay");
+function doFlash(strength = 0.16, duration = 120){
+  flashOverlay.classList.add("flash");
+  flashOverlay.style.background = `rgba(255,255,255,${strength})`;
+  setTimeout(()=>{
+    flashOverlay.classList.remove("flash");
+    flashOverlay.style.background = `rgba(255,255,255,0)`;
+  }, duration);
+}
+(function randomCrowdFlash(){
+  const wait = Math.random()*2800 + 1200;
+  setTimeout(()=>{
+    doFlash(Math.random()*0.10 + 0.06, 90 + Math.random()*120);
+    randomCrowdFlash();
+  }, wait);
+})();
+
+/* botones */
+let btnNo=document.getElementById("btnNo");
+let btnYes=document.getElementById("btnYes");
+let btnArea=document.getElementById("btnArea");
+
+function setNoPos(x,y){
+  btnNo.style.left = x + "px";
+  btnNo.style.top  = y + "px";
+}
+requestAnimationFrame(()=>{
+  const pad=6;
+  setNoPos(btnArea.clientWidth - btnNo.offsetWidth - pad, pad);
+});
+
+function teleportOpposite(clientX, clientY){
+  const area = btnArea.getBoundingClientRect();
+  const pad = 6;
+
+  const bw = btnNo.offsetWidth;
+  const bh = btnNo.offsetHeight;
+
+  const px = clientX - area.left;
+  const py = clientY - area.top;
+
+  const leftHalf = px < area.width/2;
+  const topHalf  = py < area.height/2;
+
+  const xLeft  = pad;
+  const xRight = Math.max(pad, area.width - bw - pad);
+  const yTop   = pad;
+  const yBot   = Math.max(pad, area.height - bh - pad);
+
+  const x = leftHalf ? xRight : xLeft;
+  const y = topHalf  ? yBot   : yTop;
+
+  setNoPos(x,y);
+
+  btnNo.animate(
+    [{ transform:"translateX(0)" }, { transform:"translateX(-10px)" }, { transform:"translateX(10px)" }, { transform:"translateX(0)" }],
+    { duration: 180, easing:"ease-out" }
+  );
+}
+
+btnNo.addEventListener("mouseenter",(e)=>teleportOpposite(e.clientX, e.clientY));
+btnArea.addEventListener("mousemove",(e)=>{
+  const nr = btnNo.getBoundingClientRect();
+  const dist = Math.hypot(
+    e.clientX - (nr.left + nr.width/2),
+    e.clientY - (nr.top + nr.height/2)
+  );
+  if(dist < 140) teleportOpposite(e.clientX, e.clientY);
+});
+btnNo.addEventListener("touchstart",(e)=>{
+  e.preventDefault();
+  const t = e.touches[0];
+  teleportOpposite(t.clientX, t.clientY);
+},{passive:false});
+btnNo.addEventListener("click",(e)=>{
+  e.preventDefault();
+  teleportOpposite(e.clientX, e.clientY);
+});
+
+/* countdown */
+let target=new Date(2026,1,14,21);
+function updateCountdown(){
+  let now=new Date();
+  let diff=target-now;
+  if(diff<0) diff=0;
+
+  let s=Math.floor(diff/1000)%60;
+  let m=Math.floor(diff/60000)%60;
+  let h=Math.floor(diff/3600000)%24;
+  let d=Math.floor(diff/86400000);
+
+  document.getElementById("countdown").innerHTML =
+    `Faltan ${d}d ${h}h ${m}m ${s}s`;
+}
+let countdownInterval=null;
+
+/* typewriter */
+function typeWriter(text, element){
+  element.textContent = "";
+  element.classList.add("type");
+
+  let i = 0;
+  let int = setInterval(()=>{
+    element.textContent += text[i];
+    i++;
+    if(i >= text.length){
+      clearInterval(int);
+      element.classList.remove("type");
+    }
+  }, 80);
+}
+
+/* Efectos al presionar Siii */
+const stageLights = document.getElementById("stageLights");
+const card = document.getElementById("card");
+
+function yesShowFX(){
+  doFlash(0.28, 140);
+  stageLights.classList.add("party");
+
+  card.classList.add("beat");
+  setTimeout(()=>card.classList.remove("beat"), 220);
+
+  setTimeout(()=>doFlash(0.18, 90), 180);
+  setTimeout(()=>doFlash(0.14, 90), 320);
+  setTimeout(()=>doFlash(0.12, 110), 520);
+}
+
+/* evento si */
+btnYes.onclick=()=>{
+  document.getElementById("afterYes").style.display="block";
+  document.getElementById("loveBanner").style.display="block";
+  document.getElementById("letterWrap").style.display="block";
+  document.getElementById("countdown").style.display="block";
+  document.getElementById("yesLabel").style.display="block";
+
+  // ocultar contenedor de botones para que no deje hueco
+  btnArea.style.display="none";
+
+  // acelerar corazoncito
+  document.querySelector(".pulseHeart")?.classList.add("fast");
+
+  // countdown
+  updateCountdown();
+  if(!countdownInterval){
+    countdownInterval=setInterval(updateCountdown,1000);
+  }
+
+  // FX + texto
+  yesShowFX();
+  typeWriter("Te amooo amorcito", document.getElementById("typeText"));
+
+  // ✅ Fade-in lento de la imagen (5.5s)
+  const img = document.getElementById("ticketImg");
+  img.classList.remove("show");   // por si recarga o reusa
+  void img.offsetWidth;           // fuerza reflow para que la transición sí corra
+  img.classList.add("show");
+
+  document.getElementById("audioYes").play().catch(()=>{});
+};
+</script>
+
+</body>
+</html>
